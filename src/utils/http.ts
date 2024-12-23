@@ -1,20 +1,59 @@
-// @/utils/http.js
-import axios from 'axios'
-
-// axios请求基础实例
-const httpInstance = axios.create({
-    baseURL: 'http://127.0.0.1:8080',
-    timeout: 5000
-})
-
-// axios请求拦截器
-httpInstance.interceptors.request.use(config => {
-    return config
-}, e => Promise.reject(e))
-
-// axios响应拦截器
-httpInstance.interceptors.response.use(res => res.data, e => {
-    return Promise.reject(e)
-})
-
-export default httpInstance
+// src/utils/http.ts
+ 
+import axios from 'axios';
+ 
+// 创建axios实例
+const httpRequest = axios.create({
+  baseURL: '/api', // 设置请求的基地址
+  timeout: 5000, // 请求超时时间
+});
+ 
+// 请求拦截器
+httpRequest.interceptors.request.use(
+  config => {
+    // 在发送请求之前做些什么
+    // 例如：添加token到header中
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+  }
+);
+ 
+// 响应拦截器
+httpRequest.interceptors.response.use(
+  response => {
+    // 对响应数据做些什么
+    console.log(response.data);
+    return response.data;
+  },
+  error => {
+    // 对响应错误做些什么
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          // 处理未授权的错误
+          console.error('未授权，请重新登录');
+          break;
+        case 404:
+          // 处理资源不存在的错误
+          console.error('请求的资源不存在');
+          break;
+        default:
+          console.error('请求失败，请稍后再试');
+      }
+    } else if (error.request) {
+      console.error('请求失败，请检查网络连接');
+    } else {
+      console.error('请求配置错误');
+    }
+    return Promise.reject(error);
+  }
+);
+ 
+export default httpRequest;

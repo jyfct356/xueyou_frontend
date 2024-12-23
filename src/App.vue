@@ -2,13 +2,14 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HomeView from '@/components/HomeView.vue'
 import ClubView from '@/components/ClubView.vue'
+import ClubInfoView from '@/components/ClubInfoView.vue'
 import UserView from '@/components/UserView.vue'
 import ActivityView from '@/components/ActivityView.vue'
 import GroupView from '@/components/GroupView.vue'
 import VoucherView from '@/components/VoucherView.vue'
 
 
-import { ref } from 'vue'
+import { ref, provide } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 
 const activeName = ref("home")
@@ -16,6 +17,21 @@ const activeName = ref("home")
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
+
+const activeClubId = ref(0);
+
+const changeActiveName = (newActiveName) => {
+  activeName.value = newActiveName;
+}
+
+const typeId = ref(null);
+
+const getTypeId = (id) => {
+  typeId.value = id;
+  console.log(id);
+}
+
+provide('typeId', typeId);
 
 
 </script>
@@ -33,18 +49,23 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
       <el-main class="main">
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
           <el-tab-pane label="首页" name="home">
-            <!-- <template #label>
-              <span style="font-size: 20px;">首页</span>
-            </template> -->
-            <HomeView/>
+            <HomeView 
+            @change-active-name="changeActiveName"
+            @get-type-id="getTypeId"
+            />
           </el-tab-pane>
-          <el-tab-pane label="俱乐部" name="club"><ClubView/></el-tab-pane>
+          <el-tab-pane label="俱乐部" name="club">
+            <ClubView
+
+            />
+          </el-tab-pane>
           <el-tab-pane label="优惠" name="voucher"><VoucherView/></el-tab-pane>
           <el-tab-pane label="活动" name="activity"><ActivityView/></el-tab-pane>
           <el-tab-pane label="正在拼" name="group"><GroupView/></el-tab-pane>
+          <el-tab-pane label="详情页" name="clubInfo" v-if="activeClubId > 0"><ClubInfoView/></el-tab-pane>
           <el-tab-pane label="个人中心" name="user"><UserView/></el-tab-pane>
         </el-tabs>
-        
+
       </el-main>
       
       <el-divider></el-divider>
@@ -65,7 +86,6 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             <el-text>广告合作</el-text>
             <el-text class="vertical-line">|</el-text>
             <el-text>联系我们</el-text>
-            <el-text class="vertical-line">|</el-text>
           </p>
           <p>
             <el-text>廉正举报</el-text>
@@ -79,9 +99,9 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
           </p>
           <p>
             <el-text>JTF版权所有©2002-2025</el-text>
-            <el-text>杭州乐读科技有限公司运营：</el-text>
-            <el-text>浙网文[2024] 0900-042号</el-text>
-            <el-text>浙公网安备 15154556489号</el-text>
+            <el-text>JTF科技有限公司运营：</el-text>
+            <el-text>浙网文[2025]</el-text>
+            <el-text>浙公网安备</el-text>
             <el-text>算法服务公示信息</el-text>
           </p>
         </div>
@@ -108,12 +128,12 @@ body {
 }
 
 .logo-slogen-font {
-  font-size: 20px;
+  font-size: 24px;
   margin-left: 12px;
 }
 
 .logo-title-font {
-  font-size: 60px;
+  font-size: 72px;
 }
 
 /* 以下是一个可选的渐变效果 */
@@ -122,8 +142,8 @@ body {
   font-weight: bold; /* 字体加粗 */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* 文字阴影 */
   letter-spacing: 1px; /* 字间距 */
-  background: -webkit-linear-gradient(30deg, #800080, #b656b6, #ffD700, #c261d6, #ffD700);
-  background: linear-gradient(30deg, #800080, #b656b6, #ffD700, #c261d6, #ffD700);
+  background: -webkit-linear-gradient(30deg, #800080, #b656b6, #ffc208, #c261d6, #ffc208);
+  background: linear-gradient(30deg, #800080, #b656b6, #ffc208, #c261d6, #ffc208);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -155,11 +175,11 @@ body {
 }
 
 .header {
-  height: 72px;
+  height: 90px;
 }
 
 .main {
-  height: 1040px;
+  min-height: 1040px;
 }
 
 
@@ -173,9 +193,12 @@ body {
 }
 
 :deep(.el-tabs__item) {
-  color: #7c18da;
+  color: transparent; /* 使文本颜色透明以显示背景渐变 */
+  background-image: linear-gradient(45deg, #e88a8d, #ca9bc7, #6559a8, #7821e1);; /* 设置渐变背景 */
+  -webkit-background-clip: text;
+  background-clip: text;
   font-weight: bold;
-  font-size: 20px; /* 设置字体大小 */
+  font-size: 24px; /* 设置字体大小 */
   font-family: 'Arial'; /* 设置字体类型为艺术字，备用字体设置为 cursive */
 }
 

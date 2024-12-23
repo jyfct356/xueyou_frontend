@@ -1,8 +1,8 @@
-import httpInstance from "@/utils/http";
+import httpRequest from "@/utils/http";
 
-export default function getTypeList() {
-    httpInstance({
+export function getTypeList() {
+    return httpRequest({
         url: '/type/list',
-        
+        method: 'get',
     })
 }
